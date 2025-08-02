@@ -54,7 +54,16 @@ const loadVideos = () => {
 //     },
 //     description: "'Midnight Serenade' by Noah Walker is a soulful journey into the depths of the night, capturing the mystique and allure of a moonlit evening. With 543K views, this song brings together tender melodies and evocative lyrics, making it a favorite among listeners seeking a contemplative yet uplifting experience. Immerse yourself in this musical masterpiece and feel the calm embrace of the night."
 // }
-
+function getTimeString(time){
+    //get hour and rest seconds
+const day = parseInt (time / 86400);
+let remainingSecond1 = time % 86400;
+const hour =parseInt (remainingSecond1 / 3600);
+let remainingSecond2 = remainingSecond1 % 3600;
+let minute =parseInt(remainingSecond2 / 60);
+const second = remainingSecond2 % 60;
+return `${day} day ${hour} hour  ${minute} minutes  ${second} second ago`
+}
 
 const displayVideos = (videos) => {
     const videoContainer = document.getElementById('videos');
@@ -64,13 +73,14 @@ const displayVideos = (videos) => {
         const card = document.createElement('div');
         card.classList = "card card-compact "
         card.innerHTML = `
-<figure class ="relative">
+<figure class ="relative h-[200px]">
     <img
       src=${video.thumbnail}
       class="h-fill w-full object-cover"
       alt="Shoes" />
-      <span class ="absolute right-2 bottom-2 bg-black rounded p-1 text-white">
-      ${video.others.posted_date}</span>
+      ${ video.others.posted_date?.length ==0 ? " " : `  <span class ="absolute right-2 bottom-2 bg-black rounded p-1 text-white">
+      ${getTimeString(video.others.posted_date)}</span> `}
+      
   </figure>
   <div class="px-0 py-2 flex gap-2">
    <div>
