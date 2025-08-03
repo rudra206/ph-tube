@@ -17,14 +17,30 @@ const displayCategories = (categories) => {
     categories.forEach((item) => {
         console.log(item);
         // create a button
-        const button = document.createElement("button");
-        button.classList = "btn";
-        button.innerText = item.category;
+        const buttonContainer = document.createElement("div");
+        /*  button.classList = "btn";
+         button.innerText = item.category;*/
+
+        buttonContainer.innerHTML = `
+        <button onclick="loadCategoryVideo (${item.category_id})" class ="btn">
+        ${item.category}
+        </button>
+        `;
+        /* button.onclick = ()=>{alert("hello")} ; */
 
         //add button to category container
-        categoryContainer.append(button);
+        categoryContainer.append(buttonContainer);
     });
 };
+
+const loadCategoryVideo = (id) => {
+   // alert (id);
+     fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+        .then((res) => res.json())
+        .then((data) => displayVideos(data.category))
+        .catch((error) => console.log(error));
+};
+
 
 //create videos
 const loadVideos = () => {
@@ -54,19 +70,20 @@ const loadVideos = () => {
 //     },
 //     description: "'Midnight Serenade' by Noah Walker is a soulful journey into the depths of the night, capturing the mystique and allure of a moonlit evening. With 543K views, this song brings together tender melodies and evocative lyrics, making it a favorite among listeners seeking a contemplative yet uplifting experience. Immerse yourself in this musical masterpiece and feel the calm embrace of the night."
 // }
-function getTimeString(time){
+function getTimeString(time) {
     //get hour and rest seconds
-const day = parseInt (time / 86400);
-let remainingSecond1 = time % 86400;
-const hour =parseInt (remainingSecond1 / 3600);
-let remainingSecond2 = remainingSecond1 % 3600;
-let minute =parseInt(remainingSecond2 / 60);
-const second = remainingSecond2 % 60;
-return `${day} day ${hour} hour  ${minute} minutes  ${second} second ago`
+    const day = parseInt(time / 86400);
+    let remainingSecond1 = time % 86400;
+    const hour = parseInt(remainingSecond1 / 3600);
+    let remainingSecond2 = remainingSecond1 % 3600;
+    let minute = parseInt(remainingSecond2 / 60);
+    const second = remainingSecond2 % 60;
+    return `${day} day ${hour} hour  ${minute} minutes  ${second} second ago`
 }
 
 const displayVideos = (videos) => {
     const videoContainer = document.getElementById('videos');
+    videoContainer.innerHTML = " ";
     videos.forEach(video => {
         console.log(video);
         //create card
@@ -78,7 +95,7 @@ const displayVideos = (videos) => {
       src=${video.thumbnail}
       class="h-fill w-full object-cover"
       alt="Shoes" />
-      ${ video.others.posted_date?.length ==0 ? " " : `  <span class ="absolute right-2 bottom-2 bg-black rounded p-1 text-white">
+      ${video.others.posted_date?.length == 0 ? " " : `  <span class ="absolute text-xs right-2 bottom-2 bg-black rounded p-1 text-white">
       ${getTimeString(video.others.posted_date)}</span> `}
       
   </figure>
