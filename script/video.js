@@ -34,8 +34,8 @@ const displayCategories = (categories) => {
 };
 
 const loadCategoryVideo = (id) => {
-   // alert (id);
-     fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+    // alert (id);
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
         .then((res) => res.json())
         .then((data) => displayVideos(data.category))
         .catch((error) => console.log(error));
@@ -84,6 +84,23 @@ function getTimeString(time) {
 const displayVideos = (videos) => {
     const videoContainer = document.getElementById('videos');
     videoContainer.innerHTML = " ";
+
+    if (videos.length == 0) {
+        videoContainer.classList.remove("grid");
+        videoContainer.innerHTML = `
+        <div class="min-h-[300px] flex flex-col justify-center items-center">
+        <img src="assets/Icon.png"/>
+        <h2 class= " font-bold text-center text-xl ">
+        No Content Here in this Category.
+        </h2>
+        </div>
+        `;
+        return;
+    }
+    else {
+        videoContainer.classList.add("grid");
+    }
+
     videos.forEach(video => {
         console.log(video);
         //create card
