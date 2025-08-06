@@ -22,7 +22,7 @@ const displayCategories = (categories) => {
          button.innerText = item.category;*/
 
         buttonContainer.innerHTML = `
-        <button onclick="loadCategoryVideo (${item.category_id})" class ="btn">
+        <button id="btn-${item.category_id}" onclick="loadCategoryVideo (${item.category_id})" class ="btn category-btn">
         ${item.category}
         </button>
         `;
@@ -33,19 +33,62 @@ const displayCategories = (categories) => {
     });
 };
 
+const removeActiveClass = () => {
+    const buttons = document.getElementsByClassName("category-btn");
+    console.log(buttons);
+    for (let btn of buttons) {
+        btn.classList.remove("active");
+    }
+}
+
 const loadCategoryVideo = (id) => {
     // alert (id);
     fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
         .then((res) => res.json())
-        .then((data) => displayVideos(data.category))
+        /*.then((data) => displayVideos(data.category))*/
+        .then((data) => {
+            // sobaike active class remove korao
+            removeActiveClass();
+            // id er class k active korao
+
+            const activeBtn = document.getElementById(`btn-${id}`)
+            activeBtn.classList.add("active");
+            displayVideos(data.category)
+        })
         .catch((error) => console.log(error));
+};
+
+const loadDetails = async (videoId) => {
+    console.log(videoId);
+    const uri = `https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`;
+    const res = await fetch(uri);
+    const data = await res.json();
+   console.log(data);
+   displayDetails(data.video)
+
+}
+
+const displayDetails = (video) => {
+    console.log(video);
+    const detailContainer = document.getElementById("modal-content");
+    detailContainer.innerHTML = `
+<img src=${video.thumbnail}/>
+<p>${video.description}</p>
+`;
+
+    ///way-1
+    document.getElementById("showModalData").click();
+
+    //way-2
+    //document.getElementById("customModal").showModal();
+
 };
 
 
 //create videos
-const loadVideos = () => {
+const loadVideos = (searchText = '') => {
     //fetch data
-    fetch('https://openapi.programming-hero.com/api/phero-tube/videos')
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title= ${searchText}`)
         .then((res) => res.json())
         .then((data) => displayVideos(data.videos))
         .catch((error) => console.log(error));
@@ -102,7 +145,7 @@ const displayVideos = (videos) => {
     }
 
     videos.forEach(video => {
-        console.log(video);
+        //  console.log(video);
         //create card
         const card = document.createElement('div');
         card.classList = "card card-compact "
@@ -112,7 +155,8 @@ const displayVideos = (videos) => {
       src=${video.thumbnail}
       class="h-fill w-full object-cover"
       alt="Shoes" />
-      ${video.others.posted_date?.length == 0 ? " " : `  <span class ="absolute text-xs right-2 bottom-2 bg-black rounded p-1 text-white">
+      ${video.others.posted_date?.length == 0 ? " " :
+                `  <span class ="absolute text-xs right-2 bottom-2 bg-black rounded p-1 text-white">
       ${getTimeString(video.others.posted_date)}</span> `}
       
   </figure>
@@ -124,15 +168,16 @@ const displayVideos = (videos) => {
    <div>
     <h2 class ="font-bold">${video.title} </h2>
 <div class="flex items-center gap-2">
- <p class ="text-gray-400">${video.authors[0].profile_name}</p>
- 
- 
- ${video.authors[0].verified == true ? `<img class="w-5 " src="https://img.icons8.com/?size=96&id=D9RtvkuOe31p&format=png"/>
-</div>`: " "}
-   
-
-    <p> </p>
+ <div><p class ="text-gray-400">${video.authors[0].profile_name}</p>
+ </div>
+ <div>
+ ${video.authors[0].verified == true ? `<img class="w-5 " src="https://img.icons8.com/?size=96&id=D9RtvkuOe31p&format=png"/>` : " "}
    </div>
+</div>
+    <p><button onclick ="loadDetails('${video.video_id
+            }') "  class ="btn btn-sm btn-error">details</button> </p>
+   
+</div>
   </div>
 `; ///*${video.authors[0].verified == true ? "true" : "false"}*/
         videoContainer.append(card);
@@ -140,6 +185,9 @@ const displayVideos = (videos) => {
 
 };
 
+document.getElementById("search-input").addEventListener("keyup",(e)=>{
+loadVideos(e.target.value);
 
+});
 loadCategories();
 loadVideos();
